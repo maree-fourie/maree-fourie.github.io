@@ -4,7 +4,6 @@ lang: en
 pagetitle: Index
 ---
 
-- [Test](CodedTests2.md)
 - Work
   - [Coded Tests](CodedTests.html)
   - [JSON](JSON.html)
