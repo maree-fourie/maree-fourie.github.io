@@ -128,123 +128,25 @@ There are two methods of generating input:
 1. We can generate all possible inputs using xUnit Theory with MemberData:
 
 ```csharp
-[Theory]
-[MemberData(nameof(GeneratePackageTestSpace))]
-public async Task PackagesController_GetPackage_Prove_Logic(
-    GetPackage_request request,
-    GetPackage_environment environment)
-{
-    var repositoryFactory = new MockRepositoryFactory()
-    {
-        PackageFileRepository = new MockPackageFileRepository()
-        {
-            // We want to keep the mock logic as simple as possible.
-            // When the GetPackageFile method is called this function
-            // is executed.
-            GetPackageFileAction = (fileName, storeId)
-                => environment.Contains_package
-                    ? new MemoryStream()
-                    : null
-            // We don't populate the stream with a package because
-            // the GetPackage method does not interact with the package.
-        },
-        //...
-    };
 
-    //... Setup code
-
-    // Execute the method
-    var result = await controller.GetPackage(
-        storeId: s_package.Store_id,
-        name: s_package.Name,
-        packageVersion: s_package.Version);
-
-    // Specification
-    if (request.Accept == "application/zip" && !environment.Contains_package)
-    {
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-    else if(request.Accept == "application/zip" && environment.Contains_package)
-    {
-        Assert.IsType<FileStreamResult>(result);
-    }
-    else if(request.Accept == "application/json" && !environment.Contains_package)
-    {
-        Assert.IsType<BadRequestObjectResult>(result);  
-    }
-    else if (request.Accept == "application/json" && environment.Contains_package)
-    {
-        Assert.IsType<OkObjectResult>(result);
-    }
-    else
-    {
-        // If the result does not fall into one these categories
-        // we also want the test to fail.
-        throw new Exception("not specified");
-    }
-}
 ```
 
 We generate the inputs:
 
 ```csharp
-public static IEnumerable<object[]> GeneratePackageTestSpace()
-{
-    var requests =
-        (
-            from media_type in new[] { "application/json", "application/zip" }
-            select new GetPackage_request(accept: media_type)
-        );
 
-    var environments =
-        (
-            from contains_package in new bool[] { true, false }
-            select new GetPackage_environment(contains_package)
-        );
-
-    // We combine the inputs and return an enumerable of lists on objects
-    var space =
-        from request in requests
-        from environment in environments
-        select new object[]
-        {
-            request,
-            environment
-        };
-
-    return space;
 }
 ```
 
 2. You can generate random inputs using FsCheck with xUnit.
 
 ```csharp
-[Property(Arbitrary = new[] { typeof(Invalid_name) }, MaxTest = 300)]
-public void Invalid_names(Name invalid)
-{
-    var validator = new RequirePackageNameAttribute();
-    var result = validator.IsValid((string)invalid);
 
-    Assert.False(result);
-}
 ```
 
 ```csharp
 // The critical part of using FsCheck is generating the random inputs
-public static class Invalid_name
-{
-    public static Arbitrary<Name> Invalid_name_generator()
-    {
-        return
-            Arb
-            .Generate<string>()
-            .Select(str => (Name)str)
-            .ToArbitrary()
-            .Filter(name => // Here we filter out valid names.
-                string.IsNullOrWhiteSpace((string)name)
-                || !Regex.IsMatch((string)name, @"^[a-zA-Z0-9_]+$"));
-    }
-}
+
 ```
 
 ### System, Documentation & Acceptance Test
@@ -258,174 +160,13 @@ From ***V1*** to ***V2***:
 ***V1***: This is the first version and we don't yet have a database so we have to mock the ```PackageFileRepository``` and ```PackageRepositor```.
 
 ```csharp
-// To get the package information and not the package zip you must set the "Accept" header
-// to "application/json".
-[Fact]
-public async Task When_I_get_an_existing_package_with_the_correct_input()
-{
-    /// ARRANGE
-    (string name, string version, string definition) package =
-        (
-            name: "app1",
-            version: "1.1.1",
-            definition:
-@"{
-""$schema"": ""https://k2central.com/schemas/1.0.0/package"",
-""name"": ""app1"",
-""version"" : ""1.1.1"",
-""status"": 0,
-""items"": { }
-}"      );
 
-    var factory = new CustomWebApplicationFactory<Startup>();
-
-    // We mock the dependencies.
-    var packageFileRepository = new MockPackageFileRepository();
-    packageFileRepository.Files.Add(
-        (TestingEnvironment.StoreId, $"{package.name}-{package.version}"),
-        CreatePackageZip(package.definition, new string[] { })
-    );
-    factory.RepositoryFactory.PackageFileRepository = packageFileRepository;
-
-    var packageRepository = new MockPackageRepository();
-    packageRepository.Packages.Add(
-        (
-            TestingEnvironment.StoreId,
-            new PackageDTO(package.name, package.version, false)
-        )
-    );
-    factory.RepositoryFactory.PackageRepository = packageRepository;
-
-    var client = factory.CreateHttpClient(CertificateScope.Platform, CertificatePermisson.Contributor);
-
-    /// ACT
-    var request = new HttpRequestMessage(
-        HttpMethod.Get,
-        // The get package url: /api/v1/stores/{store id}/packages/{App name}/versions/{App version}
-        $"/api/v1/stores/{TestingEnvironment.StoreId}/packages/{package.name}/versions/{package.version}");
-
-    // return the package information as a JSON string
-    request.Headers.Add("Accept", "application/json");
-
-    var response = await
-        client
-        .SendAsync(
-            request,
-            HttpCompletionOption.ResponseHeadersRead,
-            default);
-
-    /// VERIFY
-    // If the app exists a 200 status should be returned.
-    Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
-
-    /// ...
 }
 ```
 
 ***V2***: This is a later version and don't have to mock the dependencies. We do have to populate the database with test data.
 
 ```csharp
-// To get the package information and not the package zip you must set the "Accept" header
-// to "application/json".
-[Fact]
-public async Task When_I_get_an_existing_package_using_the_correct_input()
-{
-    /// ARRANGE
-    (Guid tenantId, Guid storeId, string name, string version, string definition) app =
-        (
-            tenantId: Guid.Parse("3AA93FB0-BFC7-40D2-9436-F5102EB4D6F8"),
-            storeId: Guid.Parse("D68B3E18-EA5C-40D0-A153-1AFD4940C225"),
-            name: "app1",
-            version: "1.1.1",
-            definition:
-@"{
-""$schema"": ""https://k2central.com/schemas/1.0.0/package"",
-""name"": ""app1"",
-""version"" : ""1.1.1"",
-""status"": 0,
-""items"": { }
-}");
-
-    var factory = new CustomWebApplicationFactory<Startup>();
-
-    // We don't have a PackageFileRepository so we sill have to mock it. 
-    var packageFileRepository = new MockPackageFileRepository();
-    packageFileRepository.Files.Add(
-        (TestingEnvironment.StoreId, $"{app.name}-{app.version}"),
-        CreatePackageZip(app.definition, new string[] { })
-    );
-    factory.RepositoryFactory.PackageFileRepository = packageFileRepository;
-
-    // We do have a database and we instantiate it in memory.
-    // We remove the mock and replace it with an instance of PackageRepository.
-    var context =
-        new StoreContext(
-            new DbContextOptionsBuilder<StoreContext>()
-                .UseInMemoryDatabase(
-                    databaseName: $"TestDBPackage {Guid.NewGuid()}")
-                .Options);
-
-    var packageRepository = new PackageRepository(context, Create_mapper());
-    factory.RepositoryFactory.PackageRepository = packageRepository;
-
-    context.Stores.Add(
-        new SourceCode.AppStore.Repository.Store(
-            "MyStore",
-            app.tenantId,
-            app.storeId));
-    context.Repositories.Add(
-        new Repository(
-            app.name,
-            Guid.NewGuid(),
-            DateTime.Parse("2020-01-20 10:20:15"),
-            DateTime.Parse("2020-01-20 10:20:15"),
-            app.storeId));
-    context.SaveChanges();
-
-    var repoId =
-        context
-        .Repositories
-        .Where(rep => rep.Name == app.name && rep.StoreID == app.storeId)
-        .First()
-        .Id;
-
-    context.Packages.Add(
-        new Package(
-            app.version,
-            Guid.NewGuid(),
-            DateTime.Parse("2020-01-20 10:20:15"),
-            DateTime.Parse("2020-01-20 10:20:15"),
-            repoId));
-    context.SaveChanges();
-
-    var client =
-        factory
-        .CreateHttpClient(
-            CertificateScope.Platform,
-            CertificatePermisson.Contributor);
-
-    /// ACT
-    var request = new HttpRequestMessage(
-        HttpMethod.Get,
-        // The get package url: /api/v1/stores/{store id}/packages/{App name}/versions/{App version}
-        $"/api/v1/stores/{app.storeId}/packages/{app.name}/versions/{app.version}");
-
-    // return the package information as a JSON string.
-    request.Headers.Add("Accept", "application/json");
-
-    var response = await
-        client
-        .SendAsync(
-            request,
-            HttpCompletionOption.ResponseHeadersRead,
-            default);
-
-    /// VERIFY
-    // If the app exists a 200 status should be returned.
-    Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
-
-    /// ...
-}
 ```
 
 No change from ***V1*** to ***V2***:
@@ -435,41 +176,7 @@ This test only check the validation code and never uses any dependencies.
 We don't have to change this unit tests from ***V1*** to ***V2***.
 
 ```csharp
-[Fact]
-public async Task When_I_get_a_package_using_an_empty_package_name()
-{
-    /// ARRANGE
-    (string name, string version) package =
-        (name: "app1", version: "1.1.1");
 
-    var factory = new CustomWebApplicationFactory<Startup>();
-
-    /// ACT
-    var client = factory.CreateHttpClient(CertificateScope.Platform, CertificatePermisson.Contributor);
-    var request = new HttpRequestMessage(HttpMethod.Get, $"/api/v1/stores/{TestingEnvironment.StoreId}/packages/{"  "}/versions/{package.version}");
-    request.Headers.Add("Accept", "application/json");
-
-    var response = await
-        client
-        .SendAsync(
-            request,
-            HttpCompletionOption.ResponseHeadersRead,
-            default);
-
-    Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
-
-    /// VERIFY
-    var bad_request_object_result =
-        JsonConvert.DeserializeObject<Bad_request_object_result_struct>(
-            await response.Content.ReadAsStringAsync(),
-            new JsonSerializerSettings());
-
-    Assert.Equal(
-        new[] {
-            "The name field is required.",
-            "The package name is required." },
-        bad_request_object_result.errors.name);
-}
 ```
 
 # Test Driven Design
