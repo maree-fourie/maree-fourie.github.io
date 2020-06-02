@@ -17,3 +17,4 @@ pagetitle: Index
   - [Machine Learning](MachineLearning.html)
   - [Natural Language Processing](NaturalLanguageProcessing.html)
   - [Formal Program Verification](FormalProgramVerification.html)
+- [How to do research](How_to_do_research)
