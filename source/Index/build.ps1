@@ -1,1 +1,1 @@
-﻿pandoc --self-contained --template=.\GitHubTemplate.html5 (ls *.md).Name --ascii -o '..\..\index.html' --toc --number-sections
+﻿pandoc --self-contained --template=..\IndexTemplate.html5 (ls *.md).Name --ascii -o '..\..\index.html' --toc --number-sections
