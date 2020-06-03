@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "fGRN6LQ1ILw8ybET5IXQ0FRLCJ7w7MWhYyeR3+TbqsbPBLwqLRIJ46dztTp0gI/XTIknH0SlWoq6XLm/luzIbg==",
+  "success": true,
+  "projectFilePath": "C:\\github\\maree-fourie.github.io\\source\\Coded Tests\\CodeExamples\\CodeExamples.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\mareef\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.2\\microsoft.aspnetcore.app.ref.3.1.2.nupkg.sha512"
+  ],
+  "logs": []
+}
