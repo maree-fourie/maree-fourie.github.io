@@ -11,7 +11,7 @@ pagetitle: Index
   - [.net and IL](dot_net_il.html)
   - [Cloud architecture](cloud_architecture.html)
 - Knowlage
-  - [Formal Logic](FormalLogic.html)
+  - [Formal Logic](First-order Set Theory.svg)
   - [Ontology Engineering](OntologyEngineering.html)
   - [Logic-Based Reasoning](LogicBasedReasoning.html)
   - [Machine Learning](MachineLearning.html)

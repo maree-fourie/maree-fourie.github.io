@@ -55,14 +55,14 @@ Test coverage should only be used to find untested code. Code coverage cannot sh
 
 ![Code coverage](image/CodeCoverage.png "Code coverage")
 
-# Test Suit
+# Test Suite
 
-Here are four common goals of tests:
+Here are four common testing goals:
 
 - I want to show the logic is correct.
 - I want to show the system works.
 - I want to show how to use this.
-- I want to show this completes the user story.
+- I want to show this meets the acceptance criteria.
 
 ## Logic Proof
 
@@ -90,7 +90,7 @@ You should use public entry points to execute logic. Do not break encapsulation 
 
 <font size="+2"><span style="color:green"> ![system logo][system_logo] **I want to show the system works.**</span></font>
 
-The system test is intended to show that te parts of the software works together. Execute as little as possible to test the system.
+The system test is intended to show that the parts of the software works together. Execute as little as possible to test the system.
 
 You should have tests of different granularity laying on different places on the testing pyramid.
 
@@ -100,7 +100,7 @@ When you want to show that an API endpoint responds with the correct error when 
 
 <font size="+2"><span style="color:green"> ![documentation logo][documentation_logo] **I want to show how to use this.**</span></font>
 
-The test is intended to be executable documentation. This test should be accompanied by allot of comments explaining what the test is doing. It could help using visual studio extensions that allow for more elaborate comments, ([Rich Comments](https://docs.devexpress.com/CodeRushForRoslyn/120417/visualization-tools/rich-comments)).
+The test is intended to be executable documentation. This test should be accompanied by allot of comments explaining what the test is doing. It could help using Visual Studio&reg; extensions that allow for more elaborate comments, ([Rich Comments](https://docs.devexpress.com/CodeRushForRoslyn/120417/visualization-tools/rich-comments)).
 
 This can be a way of keeping documentation aligned with the code.
 
@@ -108,14 +108,14 @@ Don't hide setup in methods for reusability. The purpose of these tests are not 
 
 ## Acceptance Test
 
-<font size="+2"><span style="color:green"> ![acceptance logo][acceptance_logo] **I want to show this completes the user story.**</span></font>
+<font size="+2"><span style="color:green"> ![acceptance logo][acceptance_logo] **I want to show this meets the acceptance criteria.**</span></font>
 
 This test is meant to show that the user story is implemented. The test can be less general.
 The tests can be associated with the story and used as regression.
 
-## All together now
+## Building a Tests Suite
 
-One test can be used as a system test, documentation test, and acceptance test. System tests, Acceptance tests, and Documentation tests can be as complex as you need. Logic proof tests must be kept as simple as possible.
+- Identify the risk areas and write more tests there.
 
 ![Test Suit Pyramid](image/TestSuitPyramid.svg "Test Suit Pyramid")
 
@@ -183,8 +183,37 @@ We don't have to change this unit tests from ***V1*** to ***V2***.
 
 <font size="+2"><span style="color:green"> ![tdd logo][tdd_logo] **I want help developing this.**</span></font>
 
-TDD
+Test Driven Development is a developer aide. It is intended to help the developer develop clean code that works. [Kent Beck. "Test Driven Development: By Example", 2002]()
+
+When using Dest Driven Development we:[Kent Beck. "Test Driven Development: By Example", 2002]()
+
+- only write new code when a test has failed;
+- eliminate duplication.
+
+These two rules imply the following: [Kent Beck. "Test Driven Development: By Example", 2002]()
+
+- We must design organically, with running code providing feedback between decisions;
+- We must write our own tests, because we can't wait 20 times per day for someone
+else to write a test.
+- Our development environment must provide rapid response to small changes.
+- Our designs must consist of many highly cohesive, loosely coupled components, just
+to make testing easy.
+
+TDD cycle: [Kent Beck. "Test Driven Development: By Example", 2002]()
+
+1. Write a test. Use the code as you imagine it will function.
+2. Make it run. Implement the imagined functionality in a quick and simple manner.
+3. Make it right. Now that the system is functioning correctly, Refactor the code. Remove duplication. Implement good code design.
+
+Workflow: [Kent Beck. "Test Driven Development: By Example", 2002]()
+
+1. Quickly add a test.
+2. Run all tests and see the new one fail.
+3. Make a little change.
+4. Run all tests and see them all succeed.
+5. Refactor to remove duplication.
 
 # To read
 
 - https://youtu.be/-nWhH-4wWBU?t=3379
+- https://visualmutator.github.io/web/
