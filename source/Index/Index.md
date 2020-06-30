@@ -11,7 +11,7 @@ pagetitle: Index
 - Knowledge
   - [Formal Logic](First-order Set Theory.svg)
   - [*Formal Program Verification*](FormalProgramVerification.html)
-    - [Alloy](Alloy.html)
+    - [Alloy](Alloy.pdf)
   - [*Ontology Engineering*](OntologyEngineering.html)
   - [*Logic-Based Reasoning*](LogicBasedReasoning.html)
   - [*Machine Learning*](MachineLearning.html)
