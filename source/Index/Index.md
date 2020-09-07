@@ -4,7 +4,9 @@ lang: en
 pagetitle: Index
 ---
 
-- Work  
+- [*Property based testing*](Property_based_testing.html)
+
+<!-- - Work  
   - [*ASP.net architecture*](ASPnetArchitecture.html)
   - [*C#, .net, and IL*](dot_net_il.html)
   - [*Cloud architecture*](cloud_architecture.html)
@@ -18,4 +20,4 @@ pagetitle: Index
   - [*Natural Language Processing*](NaturalLanguageProcessing.html)
   - [How to do research](How_to_do_research)
 - ***old***
-  - [Coded Tests](CodedTests.html)
+  - [Coded Tests](CodedTests.html) -->

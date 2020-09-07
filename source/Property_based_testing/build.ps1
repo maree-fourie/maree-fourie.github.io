@@ -1,0 +1,1 @@
+﻿pandoc --self-contained --template=..\PageTemplate.html5 (ls *.md).Name --ascii -o '..\..\Property_based_testing.html' --toc --number-sections
