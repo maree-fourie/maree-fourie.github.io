@@ -74,8 +74,10 @@ $endfor$
 $-->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> IF: title
 $if(title)$
 <header>
+
+<a style="float: left; margin-top: 25px" href="https://maree-fourie.github.io/">Home</a>
 <h1 class="title$if(subtitle)$ followed-by-subtitle$endif$">$title$</h1>
-<a href="https://maree-fourie.github.io/">Home</a>
+
 $---------------------------------------------------------------------> subtitle
 $if(subtitle)$
 <p class="subtitle">$subtitle$</p>
