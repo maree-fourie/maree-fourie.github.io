@@ -4,7 +4,13 @@ lang: en
 pagetitle: Index
 ---
 
+## Idea
+
 - [*Empirical Big O*](Empirical_Big_O.html)
+
+## Quick reference
+
+- [*Set theory*](Set_Theory.html)
 
 <!-- - Work  
 - [*Property based testing*](Property_based_testing.html)
